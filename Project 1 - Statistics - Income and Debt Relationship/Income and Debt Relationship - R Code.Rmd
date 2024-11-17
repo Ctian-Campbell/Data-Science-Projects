@@ -1,0 +1,126 @@
+---
+title: "Project Supplemental Information"
+author: "Christian Campbell"
+date: "2023-08-13"
+output: pdf_document
+---
+
+```{r}
+library(dplyr)
+library(data.table)
+library(ggplot2)
+
+# First Data Set
+## Setting the working directory to the root of my DSC 520 directory
+setwd("C:/Users/Owner/Documents/Important/Bellevue/Statistics for Data Science/Project Data")
+
+## Load the Household Income data set
+median_income <- read.csv("Median_Household_Income.csv")
+# Raw Median Income data set 
+head(median_income)
+
+## cleaning the data set.
+median_income1 <- median_income
+
+colnames(median_income1) <- median_income[1, ]
+
+median_income1 <- median_income1[-1, ]
+
+colnames(median_income1)[1] <- "States"
+
+main_median_income_ <- select(median_income1, "States", "2003", "2004", "2005", "2006", "2007", "2008", 
+                              "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016",)
+
+# Cleaned up Median Income data set
+head(main_median_income_)
+
+# Second Data Set
+## Load the Credit Card Debt data set
+CCD <- read.csv("Credit Card Debt.csv")
+## Raw Credit Card Data Set
+head(CCD)
+
+## Cleaning up the data set.
+CCD1 <- CCD
+
+CCD2 <- CCD1[-c(1:2), ]
+
+colnames(CCD2) <- CCD1[c(3), ]
+
+CCD3 <- CCD2[-1, ]
+
+Main_CCD <- select(CCD3, c(1:15))
+
+# Cleaned up Credit Card Data Set
+head(Main_CCD)
+
+# Third Data Set
+## Load the Total Household Debt data set
+THHD <- read.csv("Total_Household_Debt.csv")
+## Raw Total Debt Data Set
+head(THHD)
+
+## Cleaning up the data set.
+THHD1 <- THHD
+
+THHD2 <- THHD1[-c(1:2), ]
+
+colnames(THHD2) <- THHD1[c(3), ]
+
+THHD3 <- THHD2[-1, ]
+
+Main_THHD <- select(THHD3, c(1:15))
+
+## Cleaned up Total Debt Data Set.
+head(Main_THHD)
+
+
+# Creating a new Date frame.
+## US Median Income
+US_MI <- main_median_income_[52, ]
+US_MI1 <- US_MI[,-1]
+
+## US Credit Card Debt
+US_CCD <- Main_CCD[53, ]
+US_CCD1 <- US_CCD[,-1]
+setnames(US_CCD1, new = c("2003", "2004", "2005", "2006", 
+                          "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", 
+                          "2015", "2016"))
+
+## US Total Debt
+US_TD <- Main_THHD[53,]
+US_TD1 <- US_TD[,-1]
+setnames(US_TD1, new = c("2003", "2004", "2005", "2006", 
+                          "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", 
+                          "2015", "2016"))
+
+## Combining the US Median Income, Credit Card Debt and Total Debt into one df
+project_data <- bind_rows(US_MI1, US_TD1, US_CCD1)
+print(project_data)
+new_project_data <- t(project_data)
+print(new_project_data)
+project_df <- data.frame(new_project_data)
+setnames(project_df, new = c("Median_Income", "Total_Debt", "Credit_Card_Debt"))
+print(project_df)        
+
+## Creating a visual for the data
+ggplot() + 
+  geom_line(data = project_df, mapping = aes( x=(rownames(project_df)), 
+  y=Median_Income), group = 14, color = "blue") +
+  geom_point(data = project_df, mapping = aes(x=(rownames(project_df)), 
+  y=Median_Income), group = 14, color = "blue") + 
+  geom_line(data = project_df, mapping = aes(x=(rownames(project_df)), 
+  y=Total_Debt), group = 14, color = "green") +
+  geom_point(data = project_df, mapping = aes(x=(rownames(project_df)), 
+  y=Total_Debt), group = 14, color = "green") +
+  geom_line(data = project_df, mapping = aes(x=(rownames(project_df)), 
+  y=Credit_Card_Debt), group = 14, color = "red") +
+  geom_point(data = project_df, mapping = aes(x=(rownames(project_df)), 
+  y=Credit_Card_Debt), group = 14, color = "red") +
+  xlab("Years") + ylab("Dollars") + ggtitle("Blue:Median Income; Green:Total Debt; Red:Credit Card Debt") 
+
+## Calculating multiple regression
+#### I couldn't get the code below to work
+#### project_lm <- lm(Median_Income ~ Total_Debt + Credit_Card_Debt, data = project_df)
+
+```
